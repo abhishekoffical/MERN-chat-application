@@ -97,34 +97,30 @@ const updateProfile=asyncHandler(async(req,res,next)=>{
         throw new ApiError(400,"name or email can't be empty")
     } 
     const avatar=req?.files?.avatar;
-    console.log("AVATAR:", avatar)
+    
     let cloudinaryResponse={};
     if(avatar){
         try {
+           
             const oldAvatarPublicId=req.user?.avatar?.public_id;
             if(oldAvatarPublicId && oldAvatarPublicId.length>0){
                 await cloudinary.uploader.destroy(oldAvatarPublicId)
             }
             cloudinaryResponse=await cloudinary.uploader.upload(
-                avatar.tempFilePath,//{
-                    // folder:"CHAT_APP_USERS_AVATARS",
-                    // transformation:[
-                    //     {width:300,height:300,crop:"limit"},
-                    //     {quality:"auto"},
-                    //     {fetch_format:"auto"}
-                    // ],
-               // }
+                avatar.tempFilePath,{
+                    folder:"CHAT_APP_USERS_AVATARS",
+                    transformation:[
+                        {width:300,height:300,crop:"limit"},
+                        {quality:"auto"},
+                        {fetch_format:"auto"}
+                    ],
+                }
             )
-            console.log("AVATAR:", avatar)
-console.log("TEMP PATH:", avatar?.tempFilePath)
-            
-        } catch (error) {
-            console.error("Cloudinary error:", error);
-console.error("Cloudinary HTTP code:", error.http_code);
-console.error("Cloudinary message:", error.message);
-
-            throw new ApiError(400,"failed to upload avatar")
-        }
+          
+    } catch (error) {
+       
+        throw new ApiError(400, "failed to upload avatar");
+    }
     }
     let data={
         fullName,
@@ -139,12 +135,16 @@ console.error("Cloudinary message:", error.message);
     let user = await User.findByIdAndUpdate(req.user._id,data,{
          returnDocument: 'after',
         runValidators:true,
+        
 
     })
+    const userResponse = user.toObject();
+   delete userResponse.password;
+
     res.status(200).json({
         success:true,
         message:"profile updated successfully",
-        user,
+        user:userResponse,
     })
 })
 
