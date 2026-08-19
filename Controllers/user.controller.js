@@ -93,7 +93,7 @@ const getUser=asyncHandler(async(req,res,next)=>{
 })
 const updateProfile=asyncHandler(async(req,res,next)=>{
     const {fullName,email}=req.body;
-    if(fullName.trim().length===0||email.trim().length===0){
+    if(fullName?.trim().length===0||email?.trim().length===0){
         throw new ApiError(400,"name or email can't be empty")
     } 
     const avatar=req?.files?.avatar;

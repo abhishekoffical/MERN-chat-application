@@ -5,6 +5,8 @@ import fileUpload from 'express-fileupload';
 import cors from 'cors';
 import { dbConnection } from './Database/db.js';
 import userRouter from './routes/user.routes.js'
+import messageRouter from './routes/message.routes.js'
+
 
 const app=express();
 
@@ -24,6 +26,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
 app.use("/api/v1/user",userRouter)
+app.use("/api/v1/message",messageRouter)
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
